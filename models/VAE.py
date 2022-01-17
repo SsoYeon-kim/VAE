@@ -49,11 +49,12 @@ class VariationalAutoencoder():
 
     def _build(self):
         
-        ### THE ENCODER
+        ### 인코더
+        # 인코더 입력(이미지) 정의
         encoder_input = Input(shape=self.input_dim, name='encoder_input')
 
         x = encoder_input
-
+        
         for i in range(self.n_layers_encoder):
             conv_layer = Conv2D(
                 filters = self.encoder_conv_filters[i]
@@ -74,7 +75,7 @@ class VariationalAutoencoder():
                 x = Dropout(rate = 0.25)(x)
 
         shape_before_flattening = K.int_shape(x)[1:]
-
+        
         x = Flatten()(x)
         self.mu = Dense(self.z_dim, name='mu')(x)
         self.log_var = Dense(self.z_dim, name='log_var')(x)
@@ -92,13 +93,17 @@ class VariationalAutoencoder():
         
         
 
-        ### THE DECODER
-
+        ### 디코터
+        
+        # 입력(잠재 공간의 포인트) 정의
         decoder_input = Input(shape=(self.z_dim,), name='decoder_input')
-
+        
+        # 입력을 Dense 층에 연결
         x = Dense(np.prod(shape_before_flattening))(decoder_input)
+        # 전치 합성곱 층에 주입할 수 있도록 벡터를 다차원 텐서로 바꿈
         x = Reshape(shape_before_flattening)(x)
-
+        
+        # 전치 합성곱 쌓기
         for i in range(self.n_layers_decoder):
             conv_t_layer = Conv2DTranspose(
                 filters = self.decoder_conv_t_filters[i]
@@ -122,7 +127,9 @@ class VariationalAutoencoder():
             
 
         decoder_output = x
-
+        
+        # 디코더를 정의하는 케라스 모델 생성
+        # (잠재 공간의 한 포인트를 받아 원본 이미지 차원으로 디코딩 함)
         self.decoder = Model(decoder_input, decoder_output)
 
         ### THE FULL VAE
@@ -203,7 +210,6 @@ class VariationalAutoencoder():
         )
 
 
-
     def train_with_generator(self, data_flow, epochs, steps_per_epoch, run_folder, print_every_n_batches = 100, initial_epoch = 0, lr_decay = 1, ):
 
         custom_callback = CustomCallback(run_folder, print_every_n_batches, initial_epoch, self)
@@ -226,19 +232,8 @@ class VariationalAutoencoder():
             , steps_per_epoch=steps_per_epoch 
             )
 
-
     
     def plot_model(self, run_folder):
         plot_model(self.model, to_file=os.path.join(run_folder ,'viz/model.png'), show_shapes = True, show_layer_names = True)
         plot_model(self.encoder, to_file=os.path.join(run_folder ,'viz/encoder.png'), show_shapes = True, show_layer_names = True)
         plot_model(self.decoder, to_file=os.path.join(run_folder ,'viz/decoder.png'), show_shapes = True, show_layer_names = True)
-
-
-
-        
-
-
-        
-
-        
-
