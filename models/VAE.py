@@ -55,6 +55,7 @@ class VariationalAutoencoder():
 
         x = encoder_input
         
+        # 합성곱층 쌓기
         for i in range(self.n_layers_encoder):
             conv_layer = Conv2D(
                 filters = self.encoder_conv_filters[i]
@@ -76,7 +77,9 @@ class VariationalAutoencoder():
 
         shape_before_flattening = K.int_shape(x)[1:]
         
+        # 마지막 합성곱층을 하나의 벡터로 펼침
         x = Flatten()(x)
+        # 
         self.mu = Dense(self.z_dim, name='mu')(x)
         self.log_var = Dense(self.z_dim, name='log_var')(x)
 
