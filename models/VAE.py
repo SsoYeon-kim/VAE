@@ -132,7 +132,7 @@ class VariationalAutoencoder():
         # (잠재 공간의 한 포인트를 받아 원본 이미지 차원으로 디코딩 함)
         self.decoder = Model(decoder_input, decoder_output)
 
-        ### THE FULL VAE
+        ### VAE
         model_input = encoder_input
         model_output = self.decoder(encoder_output)
 
