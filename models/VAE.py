@@ -148,11 +148,12 @@ class VariationalAutoencoder():
     def compile(self, learning_rate, r_loss_factor):
         self.learning_rate = learning_rate
 
-        ### COMPILATION
+        # RMSE(재구성 손실)
+        # r_loss_factor로 가중치를 주어 KL발산 손실과 균형을 맞춤
         def vae_r_loss(y_true, y_pred):
             r_loss = K.mean(K.square(y_true - y_pred), axis = [1,2,3])
             return r_loss_factor * r_loss
-
+        # KL발산 추가 (쿨백- 라이블러 발산)
         def vae_kl_loss(y_true, y_pred):
             kl_loss =  -0.5 * K.sum(1 + self.log_var - K.square(self.mu) - K.exp(self.log_var), axis = 1)
             return kl_loss
