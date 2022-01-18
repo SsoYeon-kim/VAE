@@ -146,3 +146,7 @@ RMSE에 KL발산(쿨백-라이블러 발산)추가
         optimizer = Adam(lr=learning_rate)
         self.model.compile(optimizer=optimizer, loss = vae_loss,  metrics = [vae_r_loss, vae_kl_loss])</code></pre>   
         
+### 3. 훈련   
+   
+
+        
