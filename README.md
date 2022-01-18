@@ -228,7 +228,7 @@ RMSE에 KL발산(쿨백-라이블러 발산)추가
 
             changed_z_point = JC_z_points[i] + feature_vec * factor
             changed_image = vae.decoder.predict(np.array([changed_z_point]))[0]
-</code</pre>
+</code></pre>
    
 ## 6. 결과   
    
