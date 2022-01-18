@@ -1,4 +1,6 @@
 # VAE   
+   
+VAE 기반 범죄자 변장 모습 예측 모델 연구   
     
 ## 1. 인코더   
    
@@ -155,5 +157,73 @@ RMSE에 KL발산(쿨백-라이블러 발산)추가
    
 ## 4. 특성벡터 추출   
    
-<img src="https://user-images.githubusercontent.com/62587484/149878727-c7619142-ad01-485d-aba9-71f1d927fb37.png" width="100%">
+변장 모습 예측 모델 구조도   
+<img src="https://user-images.githubusercontent.com/62587484/149878727-c7619142-ad01-485d-aba9-71f1d927fb37.png" width="100%">   
+
+- 특성벡터를 추출하기 위한 특성벡터 추출경로(Latent vector extraction path)와 이미지 생성 경로(Image generation path)로 구성   
+- 특성벡터 추출경로에서는 사람의 성별, 머리 색깔 등의 다양한 정보가 반영되어 있는 특성벡터를 추출하기 위한 특성벡터 추출기(Latent Vector Extractor)로 구성
+- 특성벡터 추출기에서 잠재 분포를 학습하고 그 분포에서 샘플링된 값인 특성벡터가 도출   
+   
+#### 특성으로 향하는 벡터   
+   
+- (남성, 여성), (안경, 안경 미착용)과 같이 반대되는 특성을 지닌 그룹간의 인코딩 벡터의 차분을 이용하여 각각의 특성을 지니는 특성벡터를 추출   
+   
+<pre><code>    while(current_n_POS < 10000):
+
+        batch = next(data_flow_label)
+        im = batch[0]
+        attribute = batch[1]
         
+        z = vae.encoder.predict(np.array(im))
+
+        z_POS = z[attribute==1]   
+        z_NEG = z[attribute==-1]
+    
+        if len(z_POS) > 0:
+            current_sum_POS = current_sum_POS + np.sum(z_POS, axis = 0)
+            current_n_POS += len(z_POS)
+            new_mean_POS = current_sum_POS / current_n_POS
+            movement_POS = np.linalg.norm(new_mean_POS-current_mean_POS)
+
+        if len(z_NEG) > 0: 
+            current_sum_NEG = current_sum_NEG + np.sum(z_NEG, axis = 0)
+            current_n_NEG += len(z_NEG)
+            new_mean_NEG = current_sum_NEG / current_n_NEG
+            movement_NEG = np.linalg.norm(new_mean_NEG-current_mean_NEG)
+
+        current_vector = new_mean_POS-new_mean_NEG
+        new_dist = np.linalg.norm(current_vector)
+        dist_change = new_dist - current_dist
+
+        current_mean_POS = np.copy(new_mean_POS)
+        current_mean_NEG = np.copy(new_mean_NEG)
+        current_dist = np.copy(new_dist)
+
+        if np.sum([movement_POS, movement_NEG]) < 0.08:
+            current_vector = current_vector / current_dist
+            print('Found the ' + label + ' vector')
+            break</code></pre>   
+   
+#### 입력 이미지에 특성벡터 적용   
+   
+- 아래 식은 인코딩된 이미지에 특성벡터를 적용하기 위한 수식으로 특성벡터의 크기를 조절할 수 있는 alpha 값이 존재   
+   
+<img src="https://user-images.githubusercontent.com/62587484/149879909-b837bd82-5dba-4640-abf7-e255ab02fef1.png" width="100%">   
+   
+- alpha는 합성되는 특성 벡터에 대한 가중치로 새로운 특성이 더해지는 정도를 조절
+- 인코딩된 이미지에 특성벡터와 alpha를 곱한 값을 더하고 디코더를 거치면 특성이 더해진 새로운 이미지가 도출
+- alpha가 증가할수록 원본 이미지의 얼굴이 점차 특성벡터가 더해진 얼굴이 생성   
+   
+## 4. 결과   
+   
+아래 그림은 남성 벡터를 alpha 값인 0, 1, 2, 3, 4에 따라 합성 후 디코딩한 결과   
+- alpha가 0인 경우 원본 이미지에 인코딩/디코딩 과정을 수행한 결과로 원본 이미지를 재구성한 결과를 의미
+   
+<img src="https://user-images.githubusercontent.com/62587484/149881251-48c980d7-beda-4977-974c-520de3f94c7d.PNG" width="100%">   
+   
+아래 그림은 남성 벡터를 alpha 값인 –4, -3, -2, -1, 0에 따라 합성 후 디코딩한 결과   
+원본 이미지에서 안경 특성벡터와 반대되는 특성벡터가 더해지면서 안경 특성이 반영되지 않는 이미지가 생성되는 결과   
+   
+<img src="https://user-images.githubusercontent.com/62587484/149881264-ff3e1203-3332-474f-8b75-46ed989dc90a.PNG" width="100%">   
+   
+   
