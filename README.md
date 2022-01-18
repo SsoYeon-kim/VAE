@@ -1,6 +1,6 @@
 # VAE   
     
-## 인코더   
+## 1. 인코더   
    
 AE에서는 각 이미지가 잠재 공간의 한 포인트에 직접 매핑   
 VAE는 각 이미지가 잠재 공간에 있는 **포인트 주변의 다변수 정규 분포**에 매핑   
@@ -14,6 +14,54 @@ VAE는 각 이미지가 잠재 공간에 있는 **포인트 주변의 다변수 
 - z = mu + sigma * epsilon
 - sigma = exp(log_var / 2)
 - (epsilon : 표준 정규 분포에서 샘플링된 값)
+   
+<pre><code>        ### 인코더
+        # 인코더 입력(이미지) 정의
+        encoder_input = Input(shape=self.input_dim, name='encoder_input')
+
+        x = encoder_input
+        
+        # 합성곱층 쌓기
+        for i in range(self.n_layers_encoder):
+            conv_layer = Conv2D(
+                filters = self.encoder_conv_filters[i]
+                , kernel_size = self.encoder_conv_kernel_size[i]
+                , strides = self.encoder_conv_strides[i]
+                , padding = 'same'
+                , name = 'encoder_conv_' + str(i)
+                )
+
+            x = conv_layer(x)
+            
+            # 훈련 속도를 높이기 위해 각 합성곱 층 뒤에 배치 정규화 층
+            if self.use_batch_norm:
+                x = BatchNormalization()(x)
+
+            x = LeakyReLU()(x)
+            # Dropout층 
+            if self.use_dropout:
+                x = Dropout(rate = 0.25)(x)
+
+        shape_before_flattening = K.int_shape(x)[1:]
+        
+        # 마지막 합성곱층을 하나의 벡터로 펼침
+        x = Flatten()(x)
+        # flatten층을 mu츨과 log_var 층에 연결
+        self.mu = Dense(self.z_dim, name='mu')(x)
+        self.log_var = Dense(self.z_dim, name='log_var')(x)
+        
+        # 이미지가 입력되면 mu와 log_var의 값을 출력
+        self.encoder_mu_log_var = Model(encoder_input, (self.mu, self.log_var))
+
+        def sampling(args):
+            mu, log_var = args
+            epsilon = K.random_normal(shape=K.shape(mu), mean=0., stddev=1.)
+            return mu + K.exp(log_var / 2) * epsilon
+        
+        # 람다 층이 잠재 공간에서 mu화 log_var로 정의되는 정규분포로부터 포인트 z를 샘플링 함
+        encoder_output = Lambda(sampling, name='encoder_output')([self.mu, self.log_var])
+
+        self.encoder = Model(encoder_input, encoder_output)</code></pre>
    
 ### 손실 함수   
    
