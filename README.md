@@ -237,3 +237,4 @@ RMSE에 KL발산(쿨백-라이블러 발산)추가
 <img src="https://user-images.githubusercontent.com/62587484/149881264-ff3e1203-3332-474f-8b75-46ed989dc90a.PNG" width="100%">   
    
    
+- CelebA 데이터에서 약 40개의 특성 벡터를 추출할 수 있으며 이를 범죄자 변장 모습 예측에 사용할 수 있음
