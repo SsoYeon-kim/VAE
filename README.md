@@ -239,7 +239,7 @@ vae_train.ipynb 파일 참고
 <img src="https://user-images.githubusercontent.com/62587484/149881251-48c980d7-beda-4977-974c-520de3f94c7d.PNG" width="100%">   
    
 아래 그림은 남성 벡터를 alpha 값인 –4, -3, -2, -1, 0에 따라 합성 후 디코딩한 결과   
-원본 이미지에서 안경 특성벡터와 반대되는 특성벡터가 더해지면서 안경 특성이 반영되지 않는 이미지가 생성되는 결과   
+원본 이미지에서 남성 특성벡터와 반대되는 특성벡터가 더해지면서 남성 특성이 반영되지 않는 이미지가 생성되는 결과   
    
 <img src="https://user-images.githubusercontent.com/62587484/149881264-ff3e1203-3332-474f-8b75-46ed989dc90a.PNG" width="100%">   
    
