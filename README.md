@@ -89,4 +89,58 @@ RMSE에 KL발산(쿨백-라이블러 발산)추가
             return  r_loss + kl_loss
 
         optimizer = Adam(lr=learning_rate)
-        self.model.compile(optimizer=optimizer, loss = vae_loss,  metrics = [vae_r_loss, vae_kl_loss])</code></pre>
+        self.model.compile(optimizer=optimizer, loss = vae_loss,  metrics = [vae_r_loss, vae_kl_loss])</code></pre>   
+        
+## 2. 디코더   
+   
+합성곱 층을 제외하면 인코더의 반대   
+전치 합성곱(convolutional transpose)층 사용   
+   
+- 전치 합성곱은 표준 합성곱 층의 원리와 동일하게 필터가 이미지 위를 지나가지만 strides=2일 때 텐서의 높이와 너비를 두 배로 늘림
+- 케라스에서는 Conv2DTranspose 층을 사용해 전치 합성곱 연상르 수행
+- strides=2로 Conv2DTranspose 층을 쌓으면 점진적으로 크기가 증가되어 원본 이미지 차원인 28 × 28까지 되돌릴 수 있음
+   
+<pre><code>        ### 디코터
+        
+        # 입력(잠재 공간의 포인트) 정의
+        decoder_input = Input(shape=(self.z_dim,), name='decoder_input')
+        
+        # 입력을 Dense 층에 연결
+        x = Dense(np.prod(shape_before_flattening))(decoder_input)
+        # 전치 합성곱 층에 주입할 수 있도록 벡터를 다차원 텐서로 바꿈
+        x = Reshape(shape_before_flattening)(x)
+        
+        # 전치 합성곱 쌓기
+        for i in range(self.n_layers_decoder):
+            conv_t_layer = Conv2DTranspose(
+                filters = self.decoder_conv_t_filters[i]
+                , kernel_size = self.decoder_conv_t_kernel_size[i]
+                , strides = self.decoder_conv_t_strides[i]
+                , padding = 'same'
+                , name = 'decoder_conv_t_' + str(i)
+                )
+
+            x = conv_t_layer(x)
+
+            if i < self.n_layers_decoder - 1:
+                if self.use_batch_norm:
+                    x = BatchNormalization()(x)
+                x = LeakyReLU()(x)
+                if self.use_dropout:
+                    x = Dropout(rate = 0.25)(x)
+            else:
+                x = Activation('sigmoid')(x)
+
+            
+
+        decoder_output = x
+        
+        # 디코더를 정의하는 케라스 모델 생성
+        # (잠재 공간의 한 포인트를 받아 원본 이미지 차원으로 디코딩 함)
+        self.decoder = Model(decoder_input, decoder_output)
+
+        ### VAE
+        model_input = encoder_input
+        model_output = self.decoder(encoder_output)
+
+        self.model = Model(model_input, model_output)</code></pre>
