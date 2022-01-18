@@ -86,7 +86,9 @@ class VariationalAutoencoder():
         
         # 이미지가 입력되면 mu와 log_var의 값을 출력
         self.encoder_mu_log_var = Model(encoder_input, (self.mu, self.log_var))
-
+        
+        # epsilon을 먼저 정규분포에서 random하게 뽑고
+        # latent variable에서 sample 된 z라는 value (=decoder)가 만들어짐
         def sampling(args):
             mu, log_var = args
             epsilon = K.random_normal(shape=K.shape(mu), mean=0., stddev=1.)
