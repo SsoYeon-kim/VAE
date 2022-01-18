@@ -146,7 +146,14 @@ RMSE에 KL발산(쿨백-라이블러 발산)추가
         optimizer = Adam(lr=learning_rate)
         self.model.compile(optimizer=optimizer, loss = vae_loss,  metrics = [vae_r_loss, vae_kl_loss])</code></pre>   
         
-### 3. 훈련   
+## 3. 훈련   
    
-
+- 얼굴의 상세 정보를 충분히 인코딩하기 위해 200개의 벡터 공간을 사용
+- 재구성 손실 파라미터를 10,000으로 증가
+   
+* vae_train.ipynb 파일 참고   
+   
+## 4. 특성벡터 추출   
+   
+<img src="https://user-images.githubusercontent.com/62587484/149878727-c7619142-ad01-485d-aba9-71f1d927fb37.png" width="100%">
         
