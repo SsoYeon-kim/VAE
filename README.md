@@ -244,4 +244,8 @@ vae_train.ipynb 파일 참고
 <img src="https://user-images.githubusercontent.com/62587484/149881264-ff3e1203-3332-474f-8b75-46ed989dc90a.PNG" width="100%">   
    
    
-- CelebA 데이터에서 약 40개의 특성 벡터를 추출할 수 있으며 이를 범죄자 변장 모습 예측에 사용할 수 있음
+- CelebA 데이터에서 약 40개의 특성 벡터를 추출할 수 있으며 이를 범죄자 변장 모습 예측에 사용할 수 있음   
+   
+<img src="https://user-images.githubusercontent.com/62587484/149885195-1b40149e-d881-450e-8665-9d716de7d49f.jpg" width="100%">   
+   
+- 데이터의 대부분이 서양인으로 구성되어 있어 동양인으로 구성된 입력 이미지를 사용한다면 재구성의 결과가 원본 이미지와 매우 유사할 것으로 기대
