@@ -224,6 +224,12 @@ RMSE에 KL발산(쿨백-라이블러 발산)추가
 - 인코딩된 이미지에 특성벡터와 alpha를 곱한 값을 더하고 디코더를 거치면 특성이 더해진 새로운 이미지가 도출
 - alpha가 증가할수록 원본 이미지의 얼굴이 점차 특성벡터가 더해진 얼굴이 생성   
    
+<pre><code>        for factor in factors:
+
+            changed_z_point = JC_z_points[i] + feature_vec * factor
+            changed_image = vae.decoder.predict(np.array([changed_z_point]))[0]
+</code</pre>
+   
 ## 6. 결과   
    
 아래 그림은 남성 벡터를 alpha 값인 0, 1, 2, 3, 4에 따라 합성 후 디코딩한 결과   
