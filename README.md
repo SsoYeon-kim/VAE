@@ -189,13 +189,14 @@ vae_train.ipynb 파일 참고
 
         z_POS = z[attribute==1]   
         z_NEG = z[attribute==-1]
-    
+        
+        # 특성 더하기
         if len(z_POS) > 0:
             current_sum_POS = current_sum_POS + np.sum(z_POS, axis = 0)
             current_n_POS += len(z_POS)
             new_mean_POS = current_sum_POS / current_n_POS
             movement_POS = np.linalg.norm(new_mean_POS-current_mean_POS)
-
+        # 특성 빼기
         if len(z_NEG) > 0: 
             current_sum_NEG = current_sum_NEG + np.sum(z_NEG, axis = 0)
             current_n_NEG += len(z_NEG)
