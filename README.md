@@ -82,7 +82,7 @@ VAE는 각 이미지가 잠재 공간에 있는 **포인트 주변의 다변수 
 전치 합성곱(convolutional transpose)층 사용   
    
 - 전치 합성곱은 표준 합성곱 층의 원리와 동일하게 필터가 이미지 위를 지나가지만 strides=2일 때 텐서의 높이와 너비를 두 배로 늘림
-- 케라스에서는 Conv2DTranspose 층을 사용해 전치 합성곱 연상르 수행
+- 케라스에서는 Conv2DTranspose 층을 사용해 전치 합성곱 연 수행
 - strides=2로 Conv2DTranspose 층을 쌓으면 점진적으로 크기가 증가되어 원본 이미지 차원까지 되돌릴 수 있음
    
 <pre><code>        ### 디코터
